@@ -96,17 +96,35 @@ const mammoth = require('mammoth');
 const uploadAndAnalyzeResume = async (req, res) => {
   try {
     const { targetRole } = req.body;
+    console.log('uploadAndAnalyzeResume triggered. targetRole:', targetRole, 'File:', req.file ? req.file.originalname : 'None');
     let fileName = 'Uploaded_Resume.pdf';
     let textContent = '';
 
     if (req.file) {
       fileName = req.file.originalname;
       const fileExt = fileName.split('.').pop().toLowerCase();
+      console.log('File extension:', fileExt, 'Buffer size:', req.file.buffer.length);
       
       if (fileExt === 'pdf') {
         try {
-          const data = await pdfParse(req.file.buffer);
-          textContent = data.text;
+          let text = '';
+          if (typeof pdfParse === 'function') {
+            const data = await pdfParse(req.file.buffer);
+            text = data.text;
+          } else if (pdfParse && typeof pdfParse.PDFParse === 'function') {
+            const parser = new pdfParse.PDFParse({ data: req.file.buffer });
+            const result = await parser.getText();
+            text = result.text;
+            if (typeof parser.destroy === 'function') {
+              await parser.destroy();
+            }
+          } else if (pdfParse && typeof pdfParse.default === 'function') {
+            const data = await pdfParse.default(req.file.buffer);
+            text = data.text;
+          } else {
+            throw new Error('No valid PDF parser found in module exports.');
+          }
+          textContent = text;
         } catch (pdfErr) {
           console.warn('pdf-parse failed, attempting raw ASCII extraction fallback:', pdfErr.message);
           const bufferStr = req.file.buffer.toString('binary');
@@ -142,7 +160,10 @@ const uploadAndAnalyzeResume = async (req, res) => {
       throw new Error('Could not extract text from the uploaded file.');
     }
 
+    console.log('Extracted textContent length:', textContent.length, 'Preview:', textContent.substring(0, 100).replace(/\n/g, ' '));
+    console.log('Invoking parseResumeTextAsync...');
     const parsedData = await parseResumeTextAsync(textContent, targetRole || 'product designer');
+    console.log('parseResumeTextAsync successfully completed. Result keys:', Object.keys(parsedData));
     
     res.json({
       fileName,
@@ -150,7 +171,7 @@ const uploadAndAnalyzeResume = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in uploadAndAnalyzeResume:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message || error });
   }
 };
 
