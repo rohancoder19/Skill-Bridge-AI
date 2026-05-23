@@ -98,7 +98,20 @@ export default function Dashboard() {
   // Recruiter Dashboard View
   if (user.role === 'recruiter') {
     const activeJob = recruiterJobs.find(j => j._id === selectedRecruiterJobId);
-    const activeJobApps = recruiterApplications.filter(app => app.job?._id === selectedRecruiterJobId);
+    const activeJobApps = recruiterApplications
+      .filter(app => app.job?._id === selectedRecruiterJobId)
+      .map(app => {
+        const matchScore = activeJob
+          ? calculateMatchScore(
+              app.user?.skills,
+              activeJob.skills,
+              app.user?.targetTitle,
+              activeJob.title
+            )
+          : 0;
+        return { ...app, matchScore };
+      })
+      .sort((a, b) => b.matchScore - a.matchScore);
     const needsReviewCount = recruiterApplications.filter(a => a.status === 'Applied').length;
     
     return (
@@ -202,12 +215,7 @@ export default function Dashboard() {
                 <div style={styles.recruiterScrollList}>
                   {activeJobApps.length > 0 ? (
                     activeJobApps.map((app) => {
-                      const matchScore = calculateMatchScore(
-                        app.user?.skills, 
-                        activeJob.skills, 
-                        app.user?.targetTitle, 
-                        activeJob.title
-                      );
+                      const matchScore = app.matchScore;
                       
                       return (
                         <div key={app._id} style={styles.recruiterApplicantCard}>
