@@ -212,10 +212,21 @@ export default function Applications() {
               // Simple skills comparison for rendering match percentage
               const userSkills = (user?.skills || []).map(s => s.toLowerCase());
               const jobSkills = (job.skills || []).map(s => s.toLowerCase());
-              const matchedCount = jobSkills.filter(s => userSkills.includes(s)).length;
-              const matchPercent = jobSkills.length > 0 
-                ? Math.round((matchedCount / jobSkills.length) * 50) + 50 
-                : 80;
+              const matchedCount = jobSkills.filter(s => userSkills.includes(s) || userSkills.some(us => us.includes(s) || s.includes(us))).length;
+              
+              let matchPercent = 0;
+              if (jobSkills.length > 0) {
+                matchPercent = Math.round((matchedCount / jobSkills.length) * 90);
+              } else {
+                matchPercent = 50;
+              }
+              
+              const userTitle = (user?.targetTitle || '').toLowerCase();
+              const jobTitle = (job.title || '').toLowerCase();
+              const titleMatch = jobTitle.includes(userTitle) || userTitle.split(' ').some(w => jobTitle.includes(w));
+              if (titleMatch) {
+                matchPercent = Math.min(100, matchPercent + 10);
+              }
 
               return (
                 <div key={app._id} className="glass-card" style={styles.card}>
