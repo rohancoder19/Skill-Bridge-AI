@@ -1,6 +1,7 @@
 const Job = require('../models/Job');
 const Application = require('../models/Application');
 const User = require('../models/User');
+const Resume = require('../models/Resume');
 
 // @desc    Get all jobs with filters and matching percentage
 // @route   GET /api/jobs
@@ -287,7 +288,24 @@ const getRecruiterDashboard = async (req, res) => {
       .populate('user', 'name email skills targetTitle profileStrength')
       .populate('job', 'title company location');
     
-    res.json({ jobs, applications });
+    // Fetch resumes for these users to get their actual resume ATS scores
+    const userIds = applications.map(app => app.user._id);
+    const resumes = await Resume.find({ user: { $in: userIds } });
+    
+    // Create a map of userId -> atsScore
+    const resumeMap = {};
+    resumes.forEach(r => {
+      resumeMap[r.user.toString()] = r.atsScore;
+    });
+
+    // Add atsScore to each application object
+    const appsWithScore = applications.map(app => {
+      const appObj = app.toObject();
+      appObj.atsScore = resumeMap[app.user._id.toString()] || app.user.profileStrength || 75; // fallback
+      return appObj;
+    });
+
+    res.json({ jobs, applications: appsWithScore });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -321,7 +339,11 @@ const updateApplicationStatus = async (req, res) => {
       .populate('user', 'name email skills targetTitle profileStrength')
       .populate('job', 'title company location');
 
-    res.json(updatedApplication);
+    const resume = await Resume.findOne({ user: updatedApplication.user._id });
+    const appObj = updatedApplication.toObject();
+    appObj.atsScore = resume ? resume.atsScore : (updatedApplication.user.profileStrength || 75);
+
+    res.json(appObj);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

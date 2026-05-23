@@ -114,7 +114,7 @@ export default function Dashboard() {
           : 0;
         return { ...app, matchScore };
       })
-      .sort((a, b) => b.matchScore - a.matchScore);
+      .sort((a, b) => (b.atsScore || 0) - (a.atsScore || 0));
     const needsReviewCount = recruiterApplications.filter(a => a.status === 'Applied').length;
     
     return (
@@ -227,8 +227,13 @@ export default function Dashboard() {
                               <h4 style={{ color: '#fff', fontSize: '14px', fontWeight: 700 }}>{app.user?.name}</h4>
                               <p style={{ color: 'var(--text-muted)', fontSize: '11px', marginTop: '2px' }}>{app.user?.email}</p>
                             </div>
-                            <div style={{ textAlign: 'right' }}>
-                              <span className="badge-match" style={{ fontSize: '11px' }}>{matchScore}% Match</span>
+                            <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                              <span className="badge-match" style={{ fontSize: '11px', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
+                                {app.atsScore || 75} ATS Score
+                              </span>
+                              <span style={{ fontSize: '10px', color: 'var(--text-dim)' }}>
+                                {matchScore}% Skills Match
+                              </span>
                             </div>
                           </div>
 
