@@ -380,13 +380,13 @@ function parseTextResume(text, targetRole = 'product designer') {
 
   // 3. Define section identifiers
   const sectionMatchers = {
-    education: /^(education|academic|studies|degrees|qualifications|schooling|university)\b/i,
-    experience: /^(experience|employment|work\s+history|professional\s+experience|work\s+experience|career\s+history|history)\b/i,
-    projects: /^(projects|personal\s+projects|key\s+projects|academic\s+projects|development\s+projects)\b/i,
-    skills: /^(skills|technical\s+skills|core\s+competencies|technologies|tools|expertise|key\s+skills)\b/i,
-    certificates: /^(certifications|certificates|licenses|credentials|courses)\b/i,
-    achievements: /^(achievements|awards|honors|extracurriculars)\b/i,
-    summary: /^(summary|professional\s+summary|profile|about\s+me|objective|career\s+objective)\b/i
+    education: /(education|academic|studies|degrees|qualifications|schooling|university)/i,
+    experience: /(experience|employment|work\s+history|professional\s+experience|work\s+experience|career\s+history|history)/i,
+    projects: /(projects|personal\s+projects|key\s+projects|academic\s+projects|development\s+projects)/i,
+    skills: /(skills|technical\s+skills|core\s+competencies|technologies|tools|expertise|key\s+skills)/i,
+    certificates: /(certifications|certificates|licenses|credentials|courses)/i,
+    achievements: /(achievements|awards|honors|extracurricular)/i,
+    summary: /(summary|professional\s+summary|profile|about\s+me|objective|career\s+objective)/i
   };
 
   // 4. Split text into sections
@@ -405,11 +405,13 @@ function parseTextResume(text, targetRole = 'product designer') {
   
   for (const line of lines) {
     let sectionMatched = false;
-    for (const [secName, regex] of Object.entries(sectionMatchers)) {
-      if (regex.test(line)) {
-        currentSection = secName;
-        sectionMatched = true;
-        break;
+    if (line.length < 35) {
+      for (const [secName, regex] of Object.entries(sectionMatchers)) {
+        if (regex.test(line)) {
+          currentSection = secName;
+          sectionMatched = true;
+          break;
+        }
       }
     }
     if (!sectionMatched) {
@@ -523,15 +525,6 @@ function parseTextResume(text, targetRole = 'product designer') {
     });
   }
 
-  if (parsedEducation.length === 0) {
-    parsedEducation.push({
-      degree: 'Bachelor of Science in Computer Science',
-      school: 'Global Tech Institute',
-      year: '2020 - 2024',
-      grade: '8.8 CGPA'
-    });
-  }
-
   // 7. Extract Work Experience Details
   const parsedExperience = [];
   const expLines = sections.experience;
@@ -568,22 +561,21 @@ function parseTextResume(text, targetRole = 'product designer') {
   }
 
   if (parsedExperience.length === 0 && expLines.length > 0) {
+    // Try to find if any of the lines contain common role keywords
+    let foundRole = 'Professional Experience';
+    for (const line of expLines) {
+      const match = line.match(/(developer|engineer|designer|manager|analyst|intern|specialist|lead|consultant|architect)/i);
+      if (match) {
+        foundRole = line;
+        break;
+      }
+    }
     parsedExperience.push({
-      role: roleStr,
+      role: foundRole,
       company: 'Enterprise Solutions',
-      location: 'Bengaluru, India',
-      duration: '2022 - Present',
-      description: expLines.slice(0, 5).join(' ')
-    });
-  }
-  
-  if (parsedExperience.length === 0) {
-    parsedExperience.push({
-      role: roleStr,
-      company: 'Innovate Tech Corp',
-      location: 'San Francisco, CA',
-      duration: '2022 - Present',
-      description: 'Worked in a collaborative environment implementing best practices, improving performance, and driving key objectives.'
+      location: 'Remote',
+      duration: 'Timeline',
+      description: expLines.slice(0, 8).join(' ')
     });
   }
 
@@ -628,15 +620,6 @@ function parseTextResume(text, targetRole = 'product designer') {
       title: 'Project Portfolio Item',
       technologies: parsedSkills.slice(0, 3).map(s => s.name).join(', '),
       description: projLines.slice(0, 4).join(' '),
-      link: ''
-    });
-  }
-
-  if (parsedProjects.length === 0) {
-    parsedProjects.push({
-      title: 'Main Development Project',
-      technologies: parsedSkills.slice(0, 3).map(s => s.name).join(', '),
-      description: 'Developed and maintained core features using standard architectures, optimizing scalability and user experience.',
       link: ''
     });
   }
