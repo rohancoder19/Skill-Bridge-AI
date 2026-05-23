@@ -51,14 +51,17 @@ function calculateMatchScore(candidateSkills, jobSkills, candidateTitle, jobTitl
     }
   });
   
-  let score = 50;
+  let score = 0;
   if (reqSkills.length > 0) {
-    score = Math.round((matchCount / reqSkills.length) * 50) + 50;
+    score = Math.round((matchCount / reqSkills.length) * 90);
+  } else {
+    score = 50;
   }
   
   const cTitle = (candidateTitle || '').toLowerCase();
   const jTitle = (jobTitle || '').toLowerCase();
-  if (jTitle.includes(cTitle) || cTitle.split(' ').some(w => jTitle.includes(w))) {
+  const titleMatch = jTitle.includes(cTitle) || cTitle.split(' ').some(w => jTitle.includes(w));
+  if (titleMatch) {
     score = Math.min(100, score + 10);
   }
   
@@ -421,11 +424,11 @@ export default function Dashboard() {
             <div style={styles.atsDetailsPane}>
               <div style={styles.atsHeaderRow}>
                 <span style={styles.atsScoreText}>ATS Score</span>
-                <span style={styles.atsTagBadge}>85 / 100</span>
+                <span style={styles.atsTagBadge}>{resume?.atsScore || 0} / 100</span>
               </div>
 
               <div style={styles.gaugeContainer}>
-                <GaugeChart score={resume?.atsScore || 85} size={110} strokeWidth={9} showDetails={true} />
+                <GaugeChart score={resume?.atsScore || 0} size={110} strokeWidth={9} showDetails={true} />
               </div>
 
               <p style={styles.atsRatingComment}>

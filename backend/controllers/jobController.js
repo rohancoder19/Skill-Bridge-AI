@@ -50,9 +50,11 @@ const getJobs = async (req, res) => {
       });
 
       // Calculate score
-      let matchPercentage = 50; // base score for matching title/profile
+      let matchPercentage = 0;
       if (jobSkills.length > 0) {
-        matchPercentage = Math.round((matchCount / jobSkills.length) * 50) + 50; 
+        matchPercentage = Math.round((matchCount / jobSkills.length) * 90); 
+      } else {
+        matchPercentage = 50; // fallback if no skills are listed on the job
       }
       
       // Fine-tune title matching
@@ -104,9 +106,11 @@ const getJobById = async (req, res) => {
     });
 
     const matchCount = skillChecks.filter(c => c.status === 'Match').length;
-    let matchPercentage = 50;
+    let matchPercentage = 0;
     if (jobSkills.length > 0) {
-      matchPercentage = Math.round((matchCount / jobSkills.length) * 50) + 50;
+      matchPercentage = Math.round((matchCount / jobSkills.length) * 90);
+    } else {
+      matchPercentage = 50;
     }
 
     const userTitle = (user.targetTitle || '').toLowerCase();
