@@ -44,6 +44,7 @@ export default function JobSearch() {
     jobs, 
     applications, 
     user, 
+    resume,
     queryJobs, 
     applyJob, 
     bookmarkJob 
@@ -131,7 +132,8 @@ export default function JobSearch() {
     const success = await applyJob(selectedJobId);
     if (success) {
       setAppliedStatus(true);
-      alert('Applied successfully! Application status updated on your dashboard.');
+      const atsScore = resume?.atsScore || user?.profileStrength || 75;
+      alert(`Applied successfully! You have applied with an ATS score of ${atsScore}/100. Application status updated on your dashboard.`);
     }
   };
 

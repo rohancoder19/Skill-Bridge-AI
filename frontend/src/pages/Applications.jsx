@@ -285,7 +285,11 @@ export default function Applications() {
                     <div style={styles.timelineCol}>
                       <div style={styles.rightHeader}>
                         <div style={styles.matchScoreBlock}>
-                          <span style={styles.matchScoreVal}>{matchPercent}%</span>
+                          <span style={styles.matchScoreVal}>{app.atsScore || user?.profileStrength || 75}</span>
+                          <span style={styles.matchScoreLabel}>ATS Score</span>
+                        </div>
+                        <div style={{ ...styles.matchScoreBlock, marginLeft: '16px' }}>
+                          <span style={{ ...styles.matchScoreVal, color: 'var(--primary)' }}>{matchPercent}%</span>
                           <span style={styles.matchScoreLabel}>Match Fit</span>
                         </div>
                       </div>

@@ -1,4 +1,5 @@
 const Resume = require('../models/Resume');
+const User = require('../models/User');
 const { analyzeResumeAsync, parseResumeTextAsync } = require('../utils/geminiAnalyzer');
 
 // @desc    Get user's resume
@@ -165,9 +166,51 @@ const uploadAndAnalyzeResume = async (req, res) => {
     const parsedData = await parseResumeTextAsync(textContent, targetRole || 'product designer');
     console.log('parseResumeTextAsync successfully completed. Result keys:', Object.keys(parsedData));
     
+    // Save to database
+    let resume = await Resume.findOne({ user: req.user._id });
+    const resumeData = {
+      user: req.user._id,
+      personalInfo: parsedData.personalInfo,
+      education: parsedData.education || [],
+      workExperience: parsedData.workExperience || [],
+      internships: parsedData.internships || [],
+      projects: parsedData.projects || [],
+      achievements: parsedData.achievements || [],
+      certificates: parsedData.certificates || [],
+      skills: parsedData.skills || [],
+      atsScore: parsedData.atsScore,
+      scoreMetrics: parsedData.scoreMetrics,
+      strengths: parsedData.strengths || [],
+      improvements: parsedData.improvements || [],
+    };
+
+    if (resume) {
+      resume = await Resume.findOneAndUpdate(
+        { user: req.user._id },
+        { $set: resumeData },
+        { new: true }
+      );
+    } else {
+      resume = new Resume(resumeData);
+      await resume.save();
+    }
+
+    // Update User model targetTitle, skills, and profileStrength
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.targetTitle = parsedData.personalInfo?.title || targetRole || user.targetTitle;
+      if (parsedData.skills && parsedData.skills.length > 0) {
+        user.skills = parsedData.skills.map(s => typeof s === 'string' ? s : s.name).filter(Boolean);
+      }
+      user.profileStrength = parsedData.atsScore;
+      await user.save();
+    }
+
     res.json({
       fileName,
-      parsedData
+      parsedData,
+      resume,
+      user
     });
   } catch (error) {
     console.error('Error in uploadAndAnalyzeResume:', error);

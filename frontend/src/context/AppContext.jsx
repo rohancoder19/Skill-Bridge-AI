@@ -268,6 +268,12 @@ export const AppProvider = ({ children }) => {
 
       if (res.ok) {
         const data = await res.json();
+        if (data.resume) {
+          setResume(data.resume);
+        }
+        if (data.user) {
+          setUser(data.user);
+        }
         return data;
       } else {
         const errData = await res.json();

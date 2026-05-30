@@ -114,8 +114,27 @@ Ensure your response is ONLY the raw JSON object. Do not wrap the JSON output in
     const evaluation = JSON.parse(cleanJsonText);
     
     // Verify properties exist
-    if (typeof evaluation.atsScore === 'number' && evaluation.scoreMetrics && Array.isArray(evaluation.strengths) && Array.isArray(evaluation.improvements)) {
+    const hasAtsScore = evaluation.hasOwnProperty('atsScore') && (typeof evaluation.atsScore === 'number' || typeof evaluation.atsScore === 'string');
+    if (hasAtsScore && evaluation.scoreMetrics && Array.isArray(evaluation.strengths) && Array.isArray(evaluation.improvements)) {
       console.log('Gemini ATS analysis completed successfully.');
+      
+      // Normalize score to 0-100 range in case Gemini returns a rating on a 0-10 or 0-1 scale
+      const normalizeScore = (val) => {
+        let num = typeof val === 'number' ? val : parseFloat(val);
+        if (isNaN(num)) return 0;
+        if (num > 0 && num <= 1) return Math.round(num * 100);
+        if (num > 0 && num <= 10) return Math.round(num * 10);
+        return Math.min(100, Math.round(num));
+      };
+
+      evaluation.atsScore = normalizeScore(evaluation.atsScore);
+      if (evaluation.scoreMetrics) {
+        evaluation.scoreMetrics.contentQuality = normalizeScore(evaluation.scoreMetrics.contentQuality);
+        evaluation.scoreMetrics.keywordOptimization = normalizeScore(evaluation.scoreMetrics.keywordOptimization);
+        evaluation.scoreMetrics.formatStructure = normalizeScore(evaluation.scoreMetrics.formatStructure);
+        evaluation.scoreMetrics.relevance = normalizeScore(evaluation.scoreMetrics.relevance);
+      }
+
       return evaluation;
     } else {
       throw new Error('Missing required properties in Gemini response structure.');

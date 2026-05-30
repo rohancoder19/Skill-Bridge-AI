@@ -218,10 +218,15 @@ const applyToJob = async (req, res) => {
     if (job.company === 'Google') status = 'Under Review';
     if (job.company === 'Microsoft') status = 'Interview';
 
+    // Get user's current ATS score from Resume
+    const resume = await Resume.findOne({ user: req.user._id });
+    const atsScore = resume ? resume.atsScore : (req.user.profileStrength || 75);
+
     const application = await Application.create({
       user: req.user._id,
       job: req.params.id,
-      status
+      status,
+      atsScore
     });
 
     res.status(201).json(application);
@@ -301,9 +306,12 @@ const getRecruiterDashboard = async (req, res) => {
     // Add atsScore to each application object
     const appsWithScore = applications.map(app => {
       const appObj = app.toObject();
-      appObj.atsScore = resumeMap[app.user._id.toString()] || app.user.profileStrength || 75; // fallback
+      appObj.atsScore = appObj.atsScore || resumeMap[app.user._id.toString()] || app.user.profileStrength || 75; // fallback
       return appObj;
     });
+
+    // Sort applications by atsScore descending
+    appsWithScore.sort((a, b) => b.atsScore - a.atsScore);
 
     res.json({ jobs, applications: appsWithScore });
   } catch (error) {

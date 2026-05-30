@@ -16,6 +16,10 @@ const ApplicationSchema = new mongoose.Schema({
     enum: ['Applied', 'Under Review', 'Interview', 'Rejected'],
     default: 'Applied',
   },
+  atsScore: {
+    type: Number,
+    default: 0,
+  },
   appliedAt: {
     type: Date,
     default: Date.now,
