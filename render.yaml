@@ -15,9 +15,7 @@ services:
         value: 10000
       - key: MONGO_URI
         sync: false # User will supply their MongoDB Atlas URI
-        placeholder: "mongodb+srv://..."
       - key: GEMINI_API_KEY
         sync: false # User will supply their Google Gemini API Key
-        placeholder: "AIzaSy..."
       - key: JWT_SECRET
         generateValue: true # Render will automatically generate a secure key if not provided
