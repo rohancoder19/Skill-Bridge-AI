@@ -9,7 +9,7 @@ import {
   Send, 
   User, 
   Settings, 
-  Crown,
+
   ChevronRight,
   LogOut
 } from 'lucide-react';
@@ -87,15 +87,7 @@ export default function Sidebar({ isOpen, onClose }) {
         })}
       </nav>
 
-      {/* Upgrade to Pro Card */}
-      <div style={styles.proCard}>
-        <div style={styles.proCrown}>
-          <Crown size={16} color="#f59e0b" fill="#f59e0b" />
-          <span style={styles.proTitle}>Upgrade to Pro</span>
-        </div>
-        <p style={styles.proText}>Unlock premium features and boost your career journey.</p>
-        <button style={styles.proButton}>Upgrade Now</button>
-      </div>
+
 
       {/* User Session Info / Logout */}
       {user && (
@@ -209,43 +201,7 @@ const styles = {
     backgroundColor: 'var(--primary)',
     borderRadius: '0 4px 4px 0',
   },
-  proCard: {
-    background: 'linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%)',
-    border: '1px solid rgba(99, 102, 241, 0.15)',
-    borderRadius: '12px',
-    padding: '16px',
-    marginBottom: '20px',
-  },
-  proCrown: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-    marginBottom: '8px',
-  },
-  proTitle: {
-    fontSize: '12px',
-    fontWeight: 700,
-    color: '#fff',
-  },
-  proText: {
-    fontSize: '11px',
-    color: 'var(--text-muted)',
-    lineHeight: '1.4',
-    marginBottom: '12px',
-  },
-  proButton: {
-    width: '100%',
-    padding: '8px',
-    background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '11px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    boxShadow: '0 4px 10px rgba(99, 102, 241, 0.2)',
-    transition: 'transform 0.2s ease',
-  },
+
   userSection: {
     display: 'flex',
     alignItems: 'center',
