@@ -65,7 +65,7 @@ export default function LandingPage() {
   return (
     <div style={styles.container}>
       {/* Top Navbar */}
-      <header style={styles.navbar}>
+      <header className="landing-navbar" style={styles.navbar}>
         <div style={styles.logo}>
           <div style={styles.logoDot} />
           <span>Skill-Bridge AI</span>
@@ -86,7 +86,7 @@ export default function LandingPage() {
       </header>
 
       {/* Main Hero Grid */}
-      <main style={styles.heroGrid}>
+      <main className="hero-grid" style={styles.heroGrid}>
         {/* Left Side: Headline */}
         <div style={styles.heroText}>
           <div style={styles.tagline}>
@@ -116,12 +116,6 @@ export default function LandingPage() {
                 <button onClick={() => { setIsRegister(false); setShowAuthModal(true); }} style={styles.signInBtn}>
                   Sign In
                 </button>
-                <button onClick={handleDemoLogin} style={styles.demoBtn} title="Log in as demo user Alex Johnson">
-                  Load Candidate Demo
-                </button>
-                <button onClick={handleRecruiterDemoLogin} style={{ ...styles.demoBtn, color: 'var(--primary)', borderColor: 'var(--primary)' }} title="Log in as demo recruiter Sarah Jenkins">
-                  Load Recruiter Demo
-                </button>
               </>
             )}
           </div>
@@ -137,7 +131,7 @@ export default function LandingPage() {
         </div>
 
         {/* Right Side: Interactive Bridge & Floating widgets */}
-        <div style={styles.heroVisuals}>
+        <div className="hero-visuals" style={styles.heroVisuals}>
           {/* Glowing central bridge background */}
           <div style={styles.bridgeGlow} />
 
@@ -222,7 +216,7 @@ export default function LandingPage() {
       </section>
 
       {/* Bottom Features Deck */}
-      <section style={styles.featuresSection}>
+      <section className="features-section" style={styles.featuresSection}>
         <div style={styles.featureCard}>
           <div style={{ ...styles.featureIcon, background: 'rgba(99, 102, 241, 0.1)' }}>📄</div>
           <h3>AI Resume Builder</h3>
@@ -248,7 +242,7 @@ export default function LandingPage() {
       {/* Auth Modal overlay */}
       {showAuthModal && (
         <div style={styles.modalOverlay}>
-          <div className="glass-card" style={styles.modalContent}>
+          <div className="glass-card auth-modal-content" style={styles.modalContent}>
             <div style={styles.modalHeader}>
               <h2>{isRegister ? 'Create Account' : 'Sign In'}</h2>
               <button style={styles.closeBtn} onClick={() => setShowAuthModal(false)}>×</button>

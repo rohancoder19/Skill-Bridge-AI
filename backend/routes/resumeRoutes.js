@@ -5,6 +5,7 @@ const {
   getUserResume,
   createOrUpdateResume,
   uploadAndAnalyzeResume,
+  improveResume
 } = require('../controllers/resumeController');
 const { protect } = require('../middleware/auth');
 
@@ -19,5 +20,6 @@ router.route('/')
   .post(protect, createOrUpdateResume);
 
 router.post('/upload', protect, upload.single('resume'), uploadAndAnalyzeResume);
+router.post('/improve', protect, improveResume);
 
 module.exports = router;

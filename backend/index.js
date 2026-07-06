@@ -30,9 +30,31 @@ app.use('/api/auth', authRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/jobs', jobRoutes);
 
-// Simple test endpoint
-app.get('/', (req, res) => {
-  res.send('Skill-Bridge AI API is running...');
+const path = require('path');
+
+// Serve static assets in production
+app.use(express.static(path.join(__dirname, '../frontend/dist'), {
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    }
+  }
+}));
+
+// Explicit 404 for missing static assets to prevent catch-all index.html fallback
+app.get('/assets/*', (req, res) => {
+  res.status(404).send('Asset not found');
+});
+
+// Catch-all route to serve the React frontend app
+app.get('*', (req, res, next) => {
+  if (req.originalUrl.startsWith('/api')) {
+    return next();
+  }
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 // Error handling middleware

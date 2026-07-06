@@ -188,16 +188,329 @@ body {
   }
 }
 
-/* Print Overrides */
+/* Responsive Design System overrides */
+
+/* 1. Mobile top header & navigation elements */
+.mobile-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background-color: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-light);
+  display: none; /* hidden on desktop */
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.menu-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.menu-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.mobile-logo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.mobile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 998;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 2. Breakpoints */
+@media (max-width: 992px) {
+  /* Show mobile header */
+  .mobile-header {
+    display: flex;
+  }
+
+  /* Make sidebar a sliding drawer */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--sidebar-width) !important;
+    z-index: 999 !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Remove sidebar margin offset and pad for top header */
+  .main-content {
+    margin-left: 0 !important;
+    padding: calc(var(--header-height) + 20px) 16px 30px 16px !important;
+  }
+
+  /* Stack layout grids */
+  .hero-grid,
+  .middle-grid,
+  .bottom-grid,
+  .upload-split,
+  .ats-results-grid,
+  .ats-overview-row,
+  .ats-lists-grid,
+  .job-panes-grid,
+  .card-main-grid,
+  .profile-layout,
+  .settings-grid,
+  .post-job-grid,
+  .saved-jobs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Landing Page hero adjustments */
+  .hero-grid {
+    text-align: center;
+    padding: 30px 0 !important;
+  }
+
+  .hero-grid .tagline {
+    align-self: center !important;
+  }
+
+  .hero-grid h1 {
+    font-size: 38px !important;
+  }
+
+  .hero-visuals {
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Landing Navbar hiding items */
+  .landing-navbar {
+    padding: 15px 20px !important;
+  }
+
+  /* Resume Builder specific */
+  .resume-workspace-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .right-pane-container {
+    display: none !important; /* Hide templates styles panel on smaller screens to prioritize edit/preview */
+  }
+
+  /* Toggle display of Resume Builder edit/preview mode on mobile */
+  .resume-workspace-grid.edit-mode-active .preview-pane-container {
+    display: none !important;
+  }
+
+  .resume-workspace-grid.preview-mode-active .form-pane-container {
+    display: none !important;
+  }
+
+  .resume-workspace-grid.preview-mode-active .preview-pane-container {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* Job Search two-pane selector toggle */
+  .job-panes-grid.show-details .leftPane {
+    display: none !important;
+  }
+
+  .job-panes-grid:not(.show-details) .rightPane {
+    display: none !important;
+  }
+
+  .back-to-jobs-btn {
+    display: flex !important;
+  }
+  
+  .rightPane {
+    position: relative !important;
+    top: 0 !important;
+    padding: 20px !important;
+  }
+
+  /* Applications page timeline line adjustment */
+  .timeline-col-responsive {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid var(--border-light);
+    padding-top: 20px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Title layout alignments */
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .page-header .action-btn-row {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .page-header .action-btn-row button {
+    flex: 1 !important;
+    min-width: 100px !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Stats and Quick Info elements stack */
+  .quick-actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .quickInfoGrid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .matchScoreCard {
+    grid-template-columns: 1fr !important;
+  }
+
+  .fitSection {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid var(--border-light) !important;
+    padding-top: 16px !important;
+  }
+
+  .card-main-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Feature list landing page styling */
+  .features-section {
+    grid-template-columns: 1fr !important;
+    padding: 40px 16px !important;
+  }
+
+  /* Form spacing updates */
+  .post-job-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .auth-modal-content {
+    width: 95% !important;
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-grid h1 {
+    font-size: 32px !important;
+  }
+
+  .hero-visuals {
+    display: none !important; /* Hide visual glow widgets on extremely small mobile screens */
+  }
+
+  .quickInfoGrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Print Overrides (defined at the end of file to take absolute precedence) */
 @media print {
-  /* Hide all elements with the no-print class, sidebars, navs, and action buttons */
+  /* Hide all elements with the no-print class, sidebars, navs, headers, and action buttons */
   .no-print, 
   aside, 
   nav, 
+  header,
+  .mobile-header,
   button,
   .actionBtnRow,
   .modeTabs {
     display: none !important;
+  }
+
+  /* Ensure the preview pane container is visible when printing, regardless of edit/preview mode active */
+  .preview-pane-container,
+  .resume-workspace-grid.edit-mode-active .preview-pane-container {
+    display: block !important;
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
   }
 
   /* Reset body and container background/padding for printing */
@@ -258,4 +571,5 @@ body {
     print-color-adjust: exact !important;
   }
 }
+
 

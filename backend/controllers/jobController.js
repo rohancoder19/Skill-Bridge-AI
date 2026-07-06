@@ -306,7 +306,7 @@ const getRecruiterDashboard = async (req, res) => {
     // Add atsScore to each application object
     const appsWithScore = applications.map(app => {
       const appObj = app.toObject();
-      appObj.atsScore = appObj.atsScore || resumeMap[app.user._id.toString()] || app.user.profileStrength || 75; // fallback
+      appObj.atsScore = appObj.atsScore || resumeMap[app.user?._id?.toString()] || app.user?.profileStrength || 75; // fallback
       return appObj;
     });
 

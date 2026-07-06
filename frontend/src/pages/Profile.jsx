@@ -130,16 +130,15 @@ export default function Profile() {
   const strength = calculateStrength();
 
   return (
-    <div className="app-container">
-      <div className="main-content" style={styles.container}>
-        <header style={styles.header}>
+    <div style={styles.container}>
+      <header className="page-header" style={styles.header}>
           <div>
             <h1 style={styles.title}>My Career Profile</h1>
             <p style={styles.subtitle}>Manage your professional identity, skills, and target career direction.</p>
           </div>
         </header>
 
-        <div style={styles.profileLayout}>
+        <div className="profile-layout" style={styles.profileLayout}>
           {/* Left Column: Visual summary cards */}
           <div style={styles.summaryCol}>
             {/* User Profile Card */}
@@ -225,7 +224,7 @@ export default function Profile() {
             {/* Platform Stats Card */}
             <div className="glass-card" style={styles.statsCard}>
               <h3 style={styles.cardHeading}>Quick Activity</h3>
-              <div style={styles.statsGrid}>
+              <div className="stats-grid" style={styles.statsGrid}>
                 <div style={styles.statBox}>
                   <Bookmark size={20} style={{ color: 'var(--primary)' }} />
                   <span style={styles.statVal}>{bookmarkedCount}</span>
@@ -380,7 +379,6 @@ export default function Profile() {
             </form>
           </div>
         </div>
-      </div>
     </div>
   );
 }

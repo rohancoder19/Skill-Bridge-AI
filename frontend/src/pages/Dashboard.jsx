@@ -122,11 +122,11 @@ export default function Dashboard() {
         {/* Header */}
         <div style={styles.welcomeRow}>
           <h1 style={styles.title}>Recruiter Command Center 🚀</h1>
-          <p style={styles.subtitle}>Welcome back, {user.name}. Manage postings and track applicants.</p>
+          <p style={styles.subtitle}>Welcome back, {user?.name || ''}. Manage postings and track applicants.</p>
         </div>
 
         {/* Stats Grid */}
-        <div style={styles.actionsGrid}>
+        <div className="actions-grid" style={styles.actionsGrid}>
           <div style={{ ...styles.actionCard, cursor: 'default', background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(59, 130, 246, 0.03) 100%)' }}>
             <div style={{ ...styles.actionIconContainer, background: 'rgba(99, 102, 241, 0.2)' }}>
               <Briefcase size={22} color="var(--primary)" />
@@ -159,7 +159,7 @@ export default function Dashboard() {
         </div>
 
         {/* Panes Grid */}
-        <div style={styles.middleGrid}>
+        <div className="middle-grid" style={styles.middleGrid}>
           {/* Left Pane: Job list */}
           <div className="glass-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -329,12 +329,12 @@ export default function Dashboard() {
     <div style={styles.container}>
       {/* Welcome Header */}
       <div style={styles.welcomeRow}>
-        <h1 style={styles.title}>Welcome back, {user.name.split(' ')[0]} 👋</h1>
+        <h1 style={styles.title}>Welcome back, {(user?.name || '').split(' ')[0]} 👋</h1>
         <p style={styles.subtitle}>Let's take the next step toward your dream career.</p>
       </div>
 
       {/* Quick Action Navigation Grid */}
-      <div style={styles.actionsGrid}>
+      <div className="actions-grid" style={styles.actionsGrid}>
         {/* Action 1 */}
         <div 
           onClick={() => navigate('/resume-builder')} 
@@ -382,11 +382,11 @@ export default function Dashboard() {
       </div>
 
       {/* Middle Grid: Resume Overview & Top Matches */}
-      <div style={styles.middleGrid}>
+      <div className="middle-grid" style={styles.middleGrid}>
         {/* Left Card: Resume Overview */}
         <div className="glass-card" style={styles.resumeOverviewCard}>
           <h2 style={styles.sectionTitle}>Your Resume Overview</h2>
-          <div style={styles.resumeSplitGrid}>
+          <div className="resume-split-grid" style={styles.resumeSplitGrid}>
             {/* Resume Sheet Preview */}
             <div style={styles.resumeSheet}>
               {resume ? (
@@ -522,7 +522,7 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom Grid: Recent Applications & Improve Profile */}
-      <div style={styles.bottomGrid}>
+      <div className="bottom-grid" style={styles.bottomGrid}>
         {/* Left Section: Recent Applications */}
         <div className="glass-card" style={styles.applicationsCard}>
           <div style={styles.matchesHeader}>

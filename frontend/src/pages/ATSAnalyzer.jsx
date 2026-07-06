@@ -150,7 +150,7 @@ export default function ATSAnalyzer() {
   return (
     <div style={styles.container}>
       {/* Title Header */}
-      <div style={styles.header}>
+      <div className="page-header" style={styles.header}>
         <div>
           <h1 style={styles.title}>Analyze Resume</h1>
           <p style={styles.subtitle}>Get your resume analyzed and improve your ATS score instantly.</p>
@@ -173,7 +173,7 @@ export default function ATSAnalyzer() {
         onDragLeave={handleDrag}
         onDrop={handleDrop}
       >
-        <div style={styles.uploadSplit}>
+        <div className="upload-split" style={styles.uploadSplit}>
           <div style={styles.uploadLeft}>
             <div style={styles.uploadIconContainer}>
               <Upload size={32} color="var(--primary)" />
@@ -244,7 +244,7 @@ export default function ATSAnalyzer() {
 
       {/* Analysis Results Display */}
       {activeAnalysis && !uploading && (
-        <div style={styles.resultsGrid}>
+        <div className="ats-results-grid" style={styles.resultsGrid}>
           {/* Main Left Details */}
           <div style={styles.resultsLeft}>
             {/* Tabs */}
@@ -280,7 +280,7 @@ export default function ATSAnalyzer() {
               {activeTab === 'ats' && (
                 <div style={styles.atsTabContent}>
                   {/* Gauge & Metrics */}
-                  <div style={styles.atsOverviewRow}>
+                  <div className="ats-overview-row" style={styles.atsOverviewRow}>
                     <div style={styles.atsGaugeCol}>
                       <GaugeChart score={activeAnalysis.atsScore} size={150} strokeWidth={12} showDetails={true} />
                       <span style={styles.atsRatingBadge}>Great Score! 🎉</span>
@@ -333,7 +333,7 @@ export default function ATSAnalyzer() {
                   <hr style={styles.divider} />
 
                   {/* Strengths & Weaknesses checklists */}
-                  <div style={styles.listsGrid}>
+                  <div className="ats-lists-grid" style={styles.listsGrid}>
                     <div>
                       <h4 style={styles.listTitle}>Resume Strengths</h4>
                       <ul style={styles.checkList}>

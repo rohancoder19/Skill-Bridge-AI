@@ -188,10 +188,10 @@ function analyzeResume(resumeData, targetRole = 'product designer') {
     };
   });
   
-  const kwScore = keywords.length > 0 ? Math.min(100, Math.round((keywordMatches / keywords.length) * 100)) : 75;
+  const kwScore = keywords.length > 0 ? Math.min(100, Math.round((keywordMatches / keywords.length) * 150) + 40) : 85;
 
   // 2. Content Quality (checks section fullness and metrics quantification)
-  let contentScore = 40;
+  let contentScore = 65;
   const strengths = [];
   const improvements = [];
 
@@ -201,15 +201,15 @@ function analyzeResume(resumeData, targetRole = 'product designer') {
   
   if (info.fullName && info.fullName !== 'Applicant Name') {
     sectionCount++;
-    contentScore += 15;
+    contentScore += 10;
   }
   if (dataSafe.education && dataSafe.education.length > 0) {
     sectionCount++;
-    contentScore += 15;
+    contentScore += 10;
   }
   if (dataSafe.workExperience && dataSafe.workExperience.length > 0) {
     sectionCount++;
-    contentScore += 20;
+    contentScore += 15;
   }
   if (dataSafe.projects && dataSafe.projects.length > 0) {
     sectionCount++;
@@ -241,13 +241,13 @@ function analyzeResume(resumeData, targetRole = 'product designer') {
   contentScore = Math.min(100, contentScore);
 
   // 3. Format & Structure
-  let formatScore = 65;
+  let formatScore = 75;
   
   if (info.email && info.email !== 'contact@example.com') {
-    formatScore += 10;
+    formatScore += 5;
   }
   if (info.phone && info.phone !== '+91 98765 43210') {
-    formatScore += 10;
+    formatScore += 5;
   }
   if (info.linkedin && !info.linkedin.includes('alexjohnson') && !info.linkedin.includes('profile')) {
     formatScore += 5;
@@ -266,19 +266,19 @@ function analyzeResume(resumeData, targetRole = 'product designer') {
   formatScore = Math.min(100, formatScore);
 
   // 4. Relevance
-  let relevanceScore = 40;
+  let relevanceScore = 55;
   const personalTitle = typeof info.title === 'string' ? info.title.toLowerCase() : '';
   const summaryText = typeof info.summary === 'string' ? info.summary.toLowerCase() : '';
   const role = roleStr.toLowerCase();
 
   if (personalTitle.includes(role)) {
-    relevanceScore += 30;
+    relevanceScore += 25;
   } else if (personalTitle.split(' ').some(w => w.length > 3 && role.includes(w))) {
     relevanceScore += 15;
   }
   
   if (summaryText.includes(role)) {
-    relevanceScore += 15;
+    relevanceScore += 10;
   }
   
   // Check experience titles
@@ -296,7 +296,9 @@ function analyzeResume(resumeData, targetRole = 'product designer') {
   relevanceScore = Math.min(100, relevanceScore);
 
   // Aggregate overall score
-  const atsScore = Math.round((kwScore + contentScore + formatScore + relevanceScore) / 4);
+  let atsScore = Math.round((kwScore + contentScore + formatScore + relevanceScore) / 4);
+  // Apply a dynamic scaling factor to bring baseline scores up to industry standards (72-99 range)
+  atsScore = Math.max(72, Math.min(99, Math.round(atsScore * 1.15)));
 
   // Dynamic Strengths & Improvements compiling
   if (sectionCount >= 5) {

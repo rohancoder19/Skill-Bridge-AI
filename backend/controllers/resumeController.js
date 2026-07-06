@@ -1,6 +1,6 @@
 const Resume = require('../models/Resume');
 const User = require('../models/User');
-const { analyzeResumeAsync, parseResumeTextAsync } = require('../utils/geminiAnalyzer');
+const { analyzeResumeAsync, parseResumeTextAsync, parseResumeBufferAsync } = require('../utils/geminiAnalyzer');
 
 // @desc    Get user's resume
 // @route   GET /api/resumes
@@ -91,6 +91,23 @@ const createOrUpdateResume = async (req, res) => {
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
 
+async function parseResume(fileBuffer) {
+  try {
+    const data = await pdfParse(fileBuffer);
+    
+    // Check if text was successfully extracted
+    if (!data.text || data.text.trim().length === 0) {
+      throw new Error("No readable text found in this PDF file.");
+    }
+    
+    return data.text;
+  } catch (error) {
+    // This print statement is crucial for your Cloud Run logs
+    console.error("PDF Parsing Error detail:", error.message);
+    throw error; // Pass it to your router to trigger fallback or return 400
+  }
+}
+
 // @desc    Analyze uploaded resume file (simulation)
 // @route   POST /api/resumes/upload
 // @access  Private
@@ -100,6 +117,8 @@ const uploadAndAnalyzeResume = async (req, res) => {
     console.log('uploadAndAnalyzeResume triggered. targetRole:', targetRole, 'File:', req.file ? req.file.originalname : 'None');
     let fileName = 'Uploaded_Resume.pdf';
     let textContent = '';
+    let parsedData = null;
+    let isParsedDirectly = false;
 
     if (req.file) {
       fileName = req.file.originalname;
@@ -108,32 +127,13 @@ const uploadAndAnalyzeResume = async (req, res) => {
       
       if (fileExt === 'pdf') {
         try {
-          let text = '';
-          if (typeof pdfParse === 'function') {
-            const data = await pdfParse(req.file.buffer);
-            text = data.text;
-          } else if (pdfParse && typeof pdfParse.PDFParse === 'function') {
-            const parser = new pdfParse.PDFParse({ data: req.file.buffer });
-            const result = await parser.getText();
-            text = result.text;
-            if (typeof parser.destroy === 'function') {
-              await parser.destroy();
-            }
-          } else if (pdfParse && typeof pdfParse.default === 'function') {
-            const data = await pdfParse.default(req.file.buffer);
-            text = data.text;
-          } else {
-            throw new Error('No valid PDF parser found in module exports.');
-          }
-          textContent = text;
-        } catch (pdfErr) {
-          console.warn('pdf-parse failed, attempting raw ASCII extraction fallback:', pdfErr.message);
-          const bufferStr = req.file.buffer.toString('binary');
-          const matches = bufferStr.match(/[\x20-\x7E\s]{4,}/g);
-          textContent = matches ? matches.join(' ') : '';
-          if (!textContent || textContent.trim().length < 50) {
-            throw pdfErr; // Rethrow if we couldn't extract any meaningful text
-          }
+          console.log('Attempting Gemini Multimodal PDF parser directly...');
+          parsedData = await parseResumeBufferAsync(req.file.buffer, 'application/pdf', targetRole || 'product designer');
+          console.log('Gemini Multimodal PDF parse successful!');
+          isParsedDirectly = true;
+        } catch (multimodalErr) {
+          console.warn('Gemini Multimodal PDF parse failed, trying local pdf-parse fallback:', multimodalErr.message);
+          textContent = await parseResume(req.file.buffer);
         }
       } else if (fileExt === 'docx') {
         try {
@@ -150,21 +150,22 @@ const uploadAndAnalyzeResume = async (req, res) => {
       } else if (fileExt === 'txt') {
         textContent = req.file.buffer.toString('utf8');
       } else {
-        // Fallback for unsupported formats
         throw new Error('Unsupported file format. Please upload PDF, DOCX, or TXT.');
       }
     } else {
       textContent = req.body.text || '';
     }
 
-    if (!textContent || textContent.trim() === '') {
-      throw new Error('Could not extract text from the uploaded file.');
-    }
+    if (!isParsedDirectly) {
+      if (!textContent || textContent.trim().length < 100) {
+        throw new Error(`Could not extract sufficient text from the uploaded file (extracted ${textContent ? textContent.trim().length : 0} characters). The file might be scanned, image-only, or encrypted. Please upload a text-based PDF/DOCX file, or manually enter your details.`);
+      }
 
-    console.log('Extracted textContent length:', textContent.length, 'Preview:', textContent.substring(0, 100).replace(/\n/g, ' '));
-    console.log('Invoking parseResumeTextAsync...');
-    const parsedData = await parseResumeTextAsync(textContent, targetRole || 'product designer');
-    console.log('parseResumeTextAsync successfully completed. Result keys:', Object.keys(parsedData));
+      console.log('Extracted textContent length:', textContent.length, 'Preview:', textContent.substring(0, 100).replace(/\n/g, ' '));
+      console.log('Invoking parseResumeTextAsync...');
+      parsedData = await parseResumeTextAsync(textContent, targetRole || 'product designer');
+      console.log('parseResumeTextAsync successfully completed. Result keys:', Object.keys(parsedData));
+    }
     
     // Save to database
     let resume = await Resume.findOne({ user: req.user._id });
@@ -218,9 +219,65 @@ const uploadAndAnalyzeResume = async (req, res) => {
   }
 };
 
+// @desc    Improve user's resume using AI/rules
+// @route   POST /api/resumes/improve
+// @access  Private
+const improveResume = async (req, res) => {
+  try {
+    const { targetRole } = req.body;
+    let resume = await Resume.findOne({ user: req.user._id });
+    
+    if (!resume) {
+      return res.status(404).json({ message: 'No resume found to improve. Please upload or create one first.' });
+    }
+
+    const role = targetRole || resume.personalInfo?.title || req.user.targetTitle || 'product designer';
+    
+    // Call optimizer
+    const { improveResumeAsync } = require('../utils/resumeImprover');
+    const improvedData = await improveResumeAsync(resume, role);
+
+    // Save optimized resume to database
+    resume.personalInfo = improvedData.personalInfo;
+    resume.skills = improvedData.skills;
+    resume.education = improvedData.education || [];
+    resume.workExperience = improvedData.workExperience || [];
+    resume.internships = improvedData.internships || [];
+    resume.projects = improvedData.projects || [];
+    resume.achievements = improvedData.achievements || [];
+    resume.certificates = improvedData.certificates || [];
+    if (improvedData.additionalInfo) {
+      resume.additionalInfo = improvedData.additionalInfo;
+    }
+    resume.atsScore = improvedData.atsScore;
+    resume.scoreMetrics = improvedData.scoreMetrics;
+    resume.strengths = improvedData.strengths || [];
+    resume.improvements = improvedData.improvements || [];
+    
+    await resume.save();
+
+    // Also update User profile targetTitle, skills, and profileStrength
+    const user = await User.findById(req.user._id);
+    if (user) {
+      user.targetTitle = improvedData.personalInfo?.title || role;
+      if (improvedData.skills && improvedData.skills.length > 0) {
+        user.skills = improvedData.skills.map(s => typeof s === 'string' ? s : s.name).filter(Boolean);
+      }
+      user.profileStrength = improvedData.atsScore;
+      await user.save();
+    }
+
+    res.json(resume);
+  } catch (error) {
+    console.error('Error in improveResume controller:', error);
+    res.status(500).json({ message: error.message || 'Failed to improve resume.' });
+  }
+};
+
 module.exports = {
   getUserResume,
   createOrUpdateResume,
-  uploadAndAnalyzeResume
+  uploadAndAnalyzeResume,
+  improveResume
 };
 

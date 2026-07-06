@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useApp();
@@ -40,12 +40,18 @@ export default function Sidebar() {
 
   const handleNavigation = (path) => {
     navigate(path);
+    if (onClose) onClose();
+  };
+
+  const handleLogout = () => {
+    logout();
+    if (onClose) onClose();
   };
 
   return (
-    <aside style={styles.sidebar}>
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`} style={styles.sidebar}>
       {/* Logo Section */}
-      <div style={styles.logoSection} onClick={() => navigate('/')}>
+      <div style={styles.logoSection} onClick={() => { navigate('/'); if (onClose) onClose(); }}>
         <div style={styles.logoIcon}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -95,13 +101,13 @@ export default function Sidebar() {
       {user && (
         <div style={styles.userSection}>
           <div style={styles.userAvatar}>
-            {user.name.charAt(0)}
+            {(user?.name || 'U').charAt(0).toUpperCase()}
           </div>
           <div style={styles.userInfo}>
             <span style={styles.userName}>{user.name}</span>
             <span style={styles.userPlan}>{user.role === 'recruiter' ? 'Recruiter Account' : 'Premium Plan'}</span>
           </div>
-          <button onClick={logout} style={styles.logoutBtn} title="Sign Out">
+          <button onClick={handleLogout} style={styles.logoutBtn} title="Sign Out">
             <LogOut size={16} />
           </button>
         </div>

@@ -148,14 +148,14 @@ export default function JobSearch() {
   return (
     <div style={styles.container}>
       {/* Title Header */}
-      <div>
+      <div className="page-header">
         <h1 style={styles.title}>Job Search</h1>
         <p style={styles.subtitle}>Find the right opportunities and take the next step in your career.</p>
       </div>
 
       {/* Filter Bar */}
       <div className="glass-card" style={styles.filterCard}>
-        <div style={styles.filterGrid}>
+        <div className="filter-grid" style={styles.filterGrid}>
           {/* Keyword input */}
           <div style={styles.inputWrapper}>
             <Search size={16} style={styles.inputIcon} />
@@ -220,9 +220,9 @@ export default function JobSearch() {
       </div>
 
       {/* Main double-pane results */}
-      <div style={styles.panesGrid}>
+      <div className={"job-panes-grid " + (selectedJobId ? "show-details" : "")} style={styles.panesGrid}>
         {/* Left Pane: Jobs list */}
-        <div style={styles.leftPane}>
+        <div className="leftPane" style={styles.leftPane}>
           <div style={styles.resultsHeader}>
             <span>{jobs.length} jobs found</span>
             <span style={{ color: 'var(--text-dim)' }}>Sort by: <strong>Most Relevant</strong></span>
@@ -293,7 +293,31 @@ export default function JobSearch() {
         </div>
 
         {/* Right Pane: Selected Job Details */}
-        <div className="glass-card" style={styles.rightPane}>
+        <div className="glass-card rightPane" style={styles.rightPane}>
+          {/* Back button for mobile view */}
+          <button 
+            className="back-to-jobs-btn" 
+            onClick={() => setSelectedJobId('')} 
+            style={{
+              display: 'none',
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '8px',
+              padding: '8px 16px',
+              color: '#fff',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              marginBottom: '16px',
+              alignItems: 'center',
+              gap: '6px',
+              width: '100%',
+              justifyContent: 'center',
+            }}
+          >
+            ← Back to Jobs
+          </button>
+          
           {loadingDetails ? (
             <div style={styles.detailsLoader}>
               <div style={styles.spinner} />

@@ -1243,12 +1243,12 @@ export default function ResumeBuilder() {
   return (
     <div style={styles.container}>
       {/* Top Header Deck */}
-      <div className="no-print" style={styles.header}>
+      <div className="no-print page-header" style={styles.header}>
         <div>
           <h1 style={styles.title}>Generate Resume</h1>
           <p style={styles.subtitle}>Create a professional resume that gets you noticed.</p>
         </div>
-        <div style={styles.actionBtnRow}>
+        <div className="action-btn-row" style={styles.actionBtnRow}>
           <button onClick={handleAIOptimize} style={styles.btnAIAssist}><Sparkles size={14} /> AI Assistant</button>
           <button onClick={handleSave} style={styles.btnSave}><Save size={14} /> Save</button>
           <button onClick={() => setEditMode(editMode === 'edit' ? 'preview' : 'edit')} style={styles.btnPreview}>
@@ -1259,9 +1259,9 @@ export default function ResumeBuilder() {
       </div>
 
       {/* Main Workspace grid */}
-      <div className="resume-workspace-grid" style={styles.workspaceGrid}>
+      <div className={"resume-workspace-grid " + (editMode === 'edit' ? 'edit-mode-active' : 'preview-mode-active')} style={styles.workspaceGrid}>
         {/* Left Side: Form Sections */}
-        <div className="glass-card no-print" style={styles.formContainer}>
+        <div className="glass-card no-print form-pane-container" style={styles.formContainer}>
           {/* Mode Tabs */}
           <div style={styles.formModeHeader}>
             <div style={styles.sectionsNav}>
@@ -1483,7 +1483,7 @@ export default function ResumeBuilder() {
         </div>
 
         {/* Center Side: Live Render Sheet */}
-        <div style={styles.previewContainer}>
+        <div className="preview-pane-container" style={styles.previewContainer}>
           {/* Header tabs inside sheet area */}
           <div className="no-print" style={styles.modeTabs}>
             <button onClick={() => setEditMode('edit')} style={editMode === 'edit' ? styles.modeTabActive : styles.modeTab}>Edit Mode</button>
@@ -1510,7 +1510,7 @@ export default function ResumeBuilder() {
         </div>
 
         {/* Right Side: Templates & Styles & ATS Estimator */}
-        <div className="no-print" style={styles.rightPane}>
+        <div className="no-print right-pane-container" style={styles.rightPane}>
           {/* Template Styles customizer */}
           <div className="glass-card" style={styles.styleCustomizerCard}>
             <span style={styles.paneSectionTitle}>Template Styles</span>

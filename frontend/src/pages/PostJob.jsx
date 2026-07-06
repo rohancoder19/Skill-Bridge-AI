@@ -87,7 +87,7 @@ export default function PostJob() {
   return (
     <div style={styles.container}>
       {/* Title Header */}
-      <div style={styles.header}>
+      <div className="page-header" style={styles.header}>
         <div>
           <h1 style={styles.title}>Post a New Job</h1>
           <p style={styles.subtitle}>Create a job listing to search and match with top candidate profiles.</p>
@@ -110,7 +110,7 @@ export default function PostJob() {
         )}
 
         <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGrid}>
+          <div className="post-job-grid" style={styles.formGrid}>
             {/* Title */}
             <div style={styles.inputBox}>
               <label style={styles.label}>Job Title *</label>

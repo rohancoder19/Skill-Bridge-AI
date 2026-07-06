@@ -136,9 +136,8 @@ export default function Applications() {
   });
 
   return (
-    <div className="app-container">
-      <div className="main-content" style={styles.container}>
-        <header style={styles.header}>
+    <div style={styles.container}>
+      <header className="page-header" style={styles.header}>
           <div>
             <h1 style={styles.title}>Track Applications</h1>
             <p style={styles.subtitle}>Monitor the real-time status of your active job applications.</p>
@@ -159,7 +158,7 @@ export default function Applications() {
         </header>
 
         {/* Filter Toolbar */}
-        <div className="glass-card" style={styles.toolbar}>
+        <div className="glass-card toolbar-row" style={styles.toolbar}>
           <div style={styles.searchWrapper}>
             <Search size={18} style={styles.searchIcon} />
             <input
@@ -230,7 +229,7 @@ export default function Applications() {
 
               return (
                 <div key={app._id} className="glass-card" style={styles.card}>
-                  <div style={styles.cardMain}>
+                  <div className="card-main-grid" style={styles.cardMain}>
                     {/* Header Details */}
                     <div style={styles.detailsCol}>
                       <div style={styles.headerRow}>
@@ -282,7 +281,7 @@ export default function Applications() {
                     </div>
 
                     {/* Timeline & Actions Column */}
-                    <div style={styles.timelineCol}>
+                    <div className="timeline-col-responsive" style={styles.timelineCol}>
                       <div style={styles.rightHeader}>
                         <div style={styles.matchScoreBlock}>
                           <span style={styles.matchScoreVal}>{app.atsScore || user?.profileStrength || 75}</span>
@@ -321,7 +320,6 @@ export default function Applications() {
           )}
         </div>
       </div>
-    </div>
   );
 }
 

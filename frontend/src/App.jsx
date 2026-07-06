@@ -1,6 +1,7 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
+import { Menu } from 'lucide-react';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -19,6 +20,8 @@ import Sidebar from './components/Sidebar';
 
 function AppContent() {
   const { user, loading, token } = useApp();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   // If loading session profile on startup, show loading layout
   if (loading && token) {
@@ -40,8 +43,30 @@ function AppContent() {
         path="/*"
         element={
           user ? (
-            <div className="app-container">
-              <Sidebar />
+            <div className={`app-container ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+              <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+              
+              {/* Backdrop overlay for mobile sidebar */}
+              {isSidebarOpen && (
+                <div className="sidebar-backdrop" onClick={() => setIsSidebarOpen(false)} />
+              )}
+              
+              {/* Top bar for mobile only */}
+              <header className="mobile-header">
+                <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)}>
+                  <Menu size={24} />
+                </button>
+                <div className="mobile-logo" onClick={() => { setIsSidebarOpen(false); navigate('/'); }}>
+                  <div className="mobile-logo-dot" />
+                  <span>Skill-Bridge AI</span>
+                </div>
+                {user && (
+                  <div className="mobile-avatar" onClick={() => { setIsSidebarOpen(false); navigate('/profile'); }}>
+                    {(user?.name || 'U').charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </header>
+              
               <main className="main-content">
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />

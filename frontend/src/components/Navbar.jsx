@@ -36,7 +36,7 @@ export default function Navbar() {
         {user && (
           <div style={styles.userCard} onClick={() => navigate('/profile')}>
             <div style={styles.avatar}>
-              {user.name.charAt(0)}
+              {(user?.name || 'U').charAt(0).toUpperCase()}
             </div>
             <div style={styles.userDetails}>
               <span style={styles.userName}>{user.name}</span>

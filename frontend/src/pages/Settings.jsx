@@ -42,16 +42,15 @@ export default function Settings() {
   };
 
   return (
-    <div className="app-container">
-      <div className="main-content" style={styles.container}>
-        <header style={styles.header}>
+    <div style={styles.container}>
+      <header className="page-header" style={styles.header}>
           <div>
             <h1 style={styles.title}>Account Settings</h1>
             <p style={styles.subtitle}>Configure preferences, notifications, security, and theme settings.</p>
           </div>
         </header>
 
-        <form onSubmit={handleSaveSettings} style={styles.settingsGrid}>
+        <form onSubmit={handleSaveSettings} className="settings-grid" style={styles.settingsGrid}>
           {/* Left Column: Preferences */}
           <div style={styles.leftCol}>
             {/* Notification settings */}
@@ -272,7 +271,6 @@ export default function Settings() {
             </div>
           </div>
         </form>
-      </div>
     </div>
   );
 }

@@ -11,12 +11,12 @@ export default function SavedJobs() {
 
   return (
     <div style={styles.container}>
-      <div>
+      <div className="page-header">
         <h1 style={styles.title}>Saved Jobs</h1>
         <p style={styles.subtitle}>Your bookmarked jobs and career opportunities.</p>
       </div>
 
-      <div style={styles.grid}>
+      <div className="saved-jobs-grid" style={styles.grid}>
         {savedList.length > 0 ? (
           savedList.map((job) => (
             <div key={job._id} className="glass-card" style={styles.card}>
