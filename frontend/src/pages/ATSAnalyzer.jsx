@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Upload, 
   FileText, 
@@ -14,6 +15,7 @@ import GaugeChart from '../components/GaugeChart';
 import RadarChart from '../components/RadarChart';
 
 export default function ATSAnalyzer() {
+  const navigate = useNavigate();
   const { uploadResume, resume, user } = useApp();
   const [selectedFile, setSelectedFile] = useState(null);
   const [targetRole, setTargetRole] = useState('Product Designer');
@@ -406,7 +408,7 @@ export default function ATSAnalyzer() {
                 <h4>Want to improve your score?</h4>
                 <p>Use our AI Resume Builder to optimize your resume and boost your score.</p>
               </div>
-              <button style={styles.ctaBtn}>Improve Resume <ArrowRight size={14} /></button>
+              <button style={styles.ctaBtn} onClick={() => navigate('/resume-builder')}>Improve Resume <ArrowRight size={14} /></button>
             </div>
           </div>
 
